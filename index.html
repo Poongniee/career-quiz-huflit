@@ -1,0 +1,118 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trắc nghiệm ngành nghề HUFLIT</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: auto; padding: 20px; }
+    .question { margin-bottom: 20px; }
+    .answers label { display: block; margin: 5px 0; }
+    #submitBtn { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    #result { margin-top: 30px; font-size: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Trắc nghiệm chọn ngành phù hợp (HUFLIT)</h1>
+  <form id="quizForm">
+    <!-- Câu hỏi sẽ được chèn tự động bằng JS -->
+  </form>
+  <div id="result"></div>
+
+  <script>
+    const majors = {
+      "CNTT": 0,
+      "An toàn thông tin": 0,
+      "Kinh doanh quốc tế": 0,
+      "Marketing": 0,
+      "Quản trị kinh doanh": 0,
+      "Quan hệ quốc tế": 0,
+      "Ngôn ngữ Anh": 0
+    };
+
+    const questions = [
+      {
+        q: "Bạn thích làm việc với máy tính hay công nghệ không?",
+        a: [
+          { text: "Rất thích", major: "CNTT" },
+          { text: "Thích ở mức cơ bản", major: "An toàn thông tin" },
+          { text: "Không quan tâm lắm", major: "Marketing" },
+          { text: "Không thích", major: "Ngôn ngữ Anh" }
+        ]
+      },
+      {
+        q: "Bạn thích giao tiếp, đàm phán hay làm việc nhóm?",
+        a: [
+          { text: "Rất thích giao tiếp quốc tế", major: "Quan hệ quốc tế" },
+          { text: "Thích làm việc với khách hàng", major: "Kinh doanh quốc tế" },
+          { text: "Thích quản lý và điều hành", major: "Quản trị kinh doanh" },
+          { text: "Ít khi thích làm việc nhóm", major: "CNTT" }
+        ]
+      },
+      {
+        q: "Bạn có thích làm nội dung, truyền thông hay thiết kế không?",
+        a: [
+          { text: "Rất thích sáng tạo nội dung", major: "Marketing" },
+          { text: "Thích dịch bài, viết bài tiếng Anh", major: "Ngôn ngữ Anh" },
+          { text: "Quan tâm đến kỹ thuật truyền thông", major: "Quan hệ quốc tế" },
+          { text: "Không hứng thú", major: "An toàn thông tin" }
+        ]
+      },
+      {
+        q: "Bạn thích làm việc có tính ổn định và bảo mật cao?",
+        a: [
+          { text: "Có, rất quan tâm đến bảo mật", major: "An toàn thông tin" },
+          { text: "Thích quản lý hệ thống", major: "CNTT" },
+          { text: "Muốn có tính linh hoạt nhiều hơn", major: "Marketing" },
+          { text: "Không thích công việc máy móc", major: "Ngôn ngữ Anh" }
+        ]
+      }
+    ];
+
+    const form = document.getElementById("quizForm");
+
+    questions.forEach((q, idx) => {
+      const div = document.createElement("div");
+      div.className = "question";
+      div.innerHTML = `<p><strong>Câu ${idx + 1}:</strong> ${q.q}</p>`;
+      const ans = document.createElement("div");
+      ans.className = "answers";
+      q.a.forEach((opt, i) => {
+        const id = `q${idx}_a${i}`;
+        ans.innerHTML += `
+          <label>
+            <input type="radio" name="q${idx}" value="${opt.major}" required />
+            ${opt.text}
+          </label>`;
+      });
+      div.appendChild(ans);
+      form.appendChild(div);
+    });
+
+    const submitBtn = document.createElement("button");
+    submitBtn.textContent = "Xem kết quả";
+    submitBtn.id = "submitBtn";
+    submitBtn.type = "submit";
+    form.appendChild(submitBtn);
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const result = Object.assign({}, majors);
+      const data = new FormData(form);
+
+      for (let [key, value] of data.entries()) {
+        result[value]++;
+      }
+
+      const maxScore = Math.max(...Object.values(result));
+      const topMajors = Object.entries(result).filter(([_, v]) => v === maxScore).map(([k]) => k);
+
+      document.getElementById("result").innerHTML =
+        `Bạn phù hợp với ngành: <strong>${topMajors.join(" hoặc ")}</strong><br><br>` +
+        `Tỉ lệ phù hợp:<br>` +
+        Object.entries(result).map(([k, v]) => `${k}: ${(v / questions.length * 100).toFixed(1)}%`).join("<br>");
+    });
+  </script>
+</body>
+</html>
